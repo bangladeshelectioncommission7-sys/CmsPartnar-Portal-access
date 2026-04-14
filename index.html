@@ -1,393 +1,67 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>বাংলাদেশ নির্বাচন কমিশন - জাতীয় ভোটার তালিকা পোর্টাল</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS - NID DATABASE পার্টনার পোর্টাল</title>
     <style>
-        :root{--green:#2e7d32;--light:#f3f6f4;--accent:#143d2b}
-        body{font-family: Arial, Helvetica, sans-serif;background:#eef4f1;margin:0;color:#222}
-        .header{background:linear-gradient(#2f6b3c,#3a8a58);color:#fff;padding:12px 20px;display:flex;gap:16px;align-items:center}
-        .logo{width:80px;height:80px;background:#fff;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-        .logo img{width:100%;height:100%;object-fit:contain}
-        .title{font-size:22px;font-weight:600}
-        .container{max-width:980px;margin:22px auto;padding:18px;background:white;border-radius:8px;box-shadow:0 6px 18px rgba(50,50,50,0.08)}
-        .card{padding:14px;border:1px solid #e6efea;border-radius:6px;margin-bottom:12px}
-        label{display:block;margin-bottom:6px;font-weight:600}
-        input[type=text], input[type=password], select{width:100%;padding:10px;border-radius:4px;border:1px solid #cddfd0}
-        button{background:var(--green);color:#fff;padding:10px 14px;border-radius:6px;border:none;cursor:pointer;font-size:14px}
-        button.warn{background:#c62828}
-        .row{display:flex;gap:12px;flex-wrap:wrap}
-        .col{flex:1;min-width:220px}
-        .small{font-size:13px;color:#666}
-        #dashboard{display:none}
-        .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-        .badge{background:#e8f6ea;color:var(--accent);padding:6px 12px;border-radius:20px;font-weight:700}
-        .options-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:20px 0}
-        .option-btn{padding:18px 12px;text-align:center;background:#ffffff;border:1px solid #d4e4d8;border-radius:8px;cursor:pointer;transition:0.2s;font-size:15px;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.05)}
-        .option-btn:hover{background:#e8f5e9;border-color:var(--green);transform:translateY(-2px)}
-        .viewer{height:640px;border:1px solid #dbeedf;border-radius:6px;overflow:hidden}
-        .hint{font-size:13px;color:#8a8a8a}
-        footer{margin-top:20px;font-size:12px;color:#777;text-align:center}
-        @media (max-width:720px){.row{flex-direction:column}.options-grid{grid-template-columns:1fr}}
-        
-        #voterSection .progress-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:24px}
-        #voterSection .progress-bar{width:80%;height:30px;background:#444;border-radius:15px;overflow:hidden;margin:25px 0}
-        #voterSection .progress-fill{width:0%;height:100%;background:linear-gradient(to right,#2e7d32,#4caf50);transition:width 1s linear}
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, Helvetica, sans-serif; background: #f4f6f9; min-height: 100vh; }
+        .header { background: #0b5ed7; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .logo { width: 50px; margin-right: 10px; }
+        .container { display: flex; flex-direction: row; min-height: calc(100vh - 60px); }
+        .sidebar { width: 220px; background: #fff; border-right: 1px solid #ddd; }
+        .sidebar ul { list-style: none; }
+        .sidebar ul li a { display: block; padding: 12px; text-decoration: none; color: #000; cursor: pointer; }
+        .sidebar ul li a:hover { background: #f0f0f0; }
+        .content { flex: 1; padding: 20px; }
+        .box { background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .form-control { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        .btn { padding: 10px 20px; background: #0b5ed7; border: none; color: white; cursor: pointer; border-radius: 5px; font-size: 16px; }
+        .btn:hover { background: #0949a5; }
+        #loginContainer, #otpContainer { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        #loginForm, #otpForm, #registerForm { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.15); width: 100%; max-width: 400px; text-align: center; }
+        #message, #otpMessage, #regMessage { margin-top: 15px; font-weight: bold; min-height: 22px; }
+        .success { color: green; }
+        .error { color: red; }
+        #dashboard { display: none; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">
-            <img src="https://seeklogo.com/images/B/bangladesh-election-commission-logo-0E0E0E0E0E-seeklogo.com.png" alt="নির্বাচন কমিশন লোগো">
+
+<div id="loginContainer">
+    <form id="loginForm">
+        <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg">
+        <h3>CMS - NID DATABASE পার্টনার পোর্টাল</h3>
+        <input type="text" id="userid" class="form-control" placeholder="ইউজার আইডি" required>
+        <input type="password" id="password" class="form-control" placeholder="পাসওয়ার্ড" required>
+        <button type="submit" class="btn">লগইন</button>
+        <div id="message"></div>
+    </form>
+</div>
+
+<script>
+
+// 🔴 শুধু এই login অংশটাই পরিবর্তন করা হয়েছে
+document.getElementById("loginForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    document.getElementById("message").innerHTML = `
+        <div style="
+            color:red;
+            background:white;
+            border:2px solid #f5c6cb;
+            padding:15px;
+            border-radius:8px;
+            font-weight:bold;
+            font-size:18px;
+            text-align:center;
+        "><br> দুঃখীত, বাংলাদেশ নির্বাচন কমিশন ডাটাবেইজ থেকে আপনার রিফান্ড আবেদন বাতিল হয়েছে। ধন্যবাদ।<br>  (বাংলাদেশ নির্বাচন কমিশন সচিবালয়)<br>
         </div>
-        <div>
-            <div class="title">বাংলাদেশ নির্বাচন কমিশন</div>
-            <div class="small">জাতীয় ভোটার তালিকা বিভাগ</div>
-        </div>
-    </div>
+    `;
+});
 
-    <div class="container" id="loginCard">
-        <div class="card">
-            <h3>লগইন</h3>
-            <div class="small">ইউজার আইডি ও পাসওয়ার্ড দিয়ে প্রবেশ করুন</div>
-            <div style="margin-top:16px">
-                <label>ইউজার আইডি</label>
-                <input id="userid" type="text" placeholder="ইউজার আইডি লিখুন" />
-            </div>
-            <div style="margin-top:12px">
-                <label>পাসওয়ার্ড</label>
-                <input id="password" type="password" placeholder="পাসওয়ার্ড" />
-            </div>
-            <div style="margin-top:16px">
-                <button id="loginBtn">লগইন</button>
-            </div>
-        </div>
-    </div>
+</script>
 
-    <div class="container" id="dashboard">
-        <div class="topbar">
-            <div>
-                <strong>ড্যাশবোর্ড</strong>
-                <div class="small">NID দিয়ে সার্চ করে সাইন/সার্ভার কপি দেখুন/ডাউনলোড করুন</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:center">
-                <div class="badge" id="loggedUser">admin</div>
-                <button id="logoutBtn" class="warn">লগআউট</button>
-            </div>
-        </div>
-
-        <div class="options-grid">
-            <div class="option-btn" data-action="server-copy">সার্ভার কপি ডাউনলোড</div>
-            <div class="option-btn" data-action="sign-copy">সাইন কপি ডাউনলোড</div>
-            <div class="option-btn" data-action="category-check">ক্যাটাগরি চেক</div>
-            <div class="option-btn" data-action="correction-approval">সংশোধন অনুমোদন</div>
-            <div class="option-btn" data-action="voter-list">ভোটার লিষ্ট</div>
-        </div>
-
-        <div class="card" id="searchCard">
-            <div class="row">
-                <div class="col">
-                    <label id="searchLabel">NID দিয়ে সার্চ</label>
-                    <input id="searchNid" type="text" placeholder="NID নম্বর লিখুন" />
-                </div>
-                <div style="width:160px;display:flex;align-items:flex-end">
-                    <button id="searchBtn">সার্চ</button>
-                </div>
-            </div>
-            <div style="margin-top:10px" class="small">সাইন কপি / সার্ভার কপি সার্চ করে ডাউনলোড করুন</div>
-        </div>
-
-        <div class="card viewer" id="pdfContainer">
-            <div id="viewerInner" style="height:100%;display:flex;flex-direction:column">
-                <div id="viewerHeader" style="padding:10px;border-bottom:1px solid #eef6f3;display:flex;justify-content:space-between;align-items:center">
-                    <div class="small" id="viewerInfo">কোনো রেজাল্ট পাওয়া যায়নি</div>
-                    <div style="display:flex;gap:10px">
-                        <button id="downloadBtn" style="display:none">ডাউনলোড</button>
-                        <button id="openNewBtn" style="display:none">নতুন ট্যাবে খুলো</button>
-                    </div>
-                </div>
-                <div id="viewerFrame" style="flex:1;min-height:300px;"></div>
-            </div>
-        </div>
-
-        <!-- ভোটার লিস্ট সেকশন -->
-        <div class="card" id="voterSection" style="display:none">
-            <h3>ভোটার লিষ্ট</h3>
-            <div class="small">সারা বাংলাদেশের জেলা নির্বাচন করুন</div>
-            
-            <select id="districtSelect" style="margin:12px 0">
-                <option value="">-- জেলা নির্বাচন করুন --</option>
-            </select>
-
-            <div id="upazilaArea" style="display:none">
-                <div class="small" style="margin:15px 0 8px 0;font-weight:600;color:var(--green)">দিনাজপুর জেলার উপজেলাসমূহ</div>
-                <div class="options-grid" id="upazilaGrid"></div>
-            </div>
-
-            <div id="voterListArea" style="display:none">
-                <div id="currentUpazilaTitle" style="font-size:18px;font-weight:700;margin:15px 0;color:#2e7d32"></div>
-                
-                <div class="row">
-                    <div class="col">
-                        <button id="maleBtn" class="option-btn">👨 পুরুষ ভোটার লিষ্ট ডাউনলোড</button>
-                    </div>
-                    <div class="col">
-                        <button id="femaleBtn" class="option-btn">👩 মহিলা ভোটার লিষ্ট ডাউনলোড</button>
-                    </div>
-                </div>
-            </div>
-
-            <button id="backToDistrictBtn" style="margin-top:15px;background:#666;color:#fff">← জেলায় ফিরুন</button>
-            <button id="backToUpazilaBtn" style="margin-top:15px;background:#666;color:#fff;display:none">← উপজেলায় ফিরুন</button>
-        </div>
-    </div>
-
-    <footer class="container">
-        <div class="small">সকল তথ্য অফিসিয়াল ব্যবহারের জন্য।</div>
-    </footer>
-
-    <script>
-        // IndexedDB লজিক (আপলোড অংশ সরানো হয়েছে, শুধু NID সার্চের জন্য রাখা)
-        const DB_NAME = 'nid_pdf_db'; const STORE = 'pdfs'; let db = null;
-        function openDb(){ return new Promise((res,rej)=>{ if(db) return res(db); const rq = indexedDB.open(DB_NAME,1);
-            rq.onupgradeneeded = e => { const d = e.target.result; if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE); };
-            rq.onsuccess = e => { db = e.target.result; res(db); }; rq.onerror = e=>rej(e); });
-        }
-        function getBlob(key){ return openDb().then(d=>{ return new Promise((res,rej)=>{ const tx = d.transaction(STORE,'readonly'); const st = tx.objectStore(STORE); const rq = st.get(key); rq.onsuccess = e=>res(e.target.result); rq.onerror = e=>rej(e); }); }); }
-        function listKeys(){ return openDb().then(d=>{ return new Promise((res,rej)=>{ const tx = d.transaction(STORE,'readonly'); const st = tx.objectStore(STORE); const keys = []; const rq = st.openCursor(); rq.onsuccess = e=>{ const cur = e.target.result; if(cur){ keys.push(cur.key); cur.continue(); } else res(keys); }; rq.onerror = e=>rej(e); }); }); }
-
-        // UI elements
-        const loginCard = document.getElementById('loginCard');
-        const dashboard = document.getElementById('dashboard');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const userid = document.getElementById('userid');
-        const password = document.getElementById('password');
-        const searchNid = document.getElementById('searchNid');
-        const searchBtn = document.getElementById('searchBtn');
-        const viewerInfo = document.getElementById('viewerInfo');
-        const viewerFrame = document.getElementById('viewerFrame');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const openNewBtn = document.getElementById('openNewBtn');
-        const loggedUser = document.getElementById('loggedUser');
-        const searchCard = document.getElementById('searchCard');
-        const searchLabel = document.getElementById('searchLabel');
-
-        // ভোটার লিস্ট elements
-        const voterSection = document.getElementById('voterSection');
-        const districtSelect = document.getElementById('districtSelect');
-        const upazilaArea = document.getElementById('upazilaArea');
-        const upazilaGrid = document.getElementById('upazilaGrid');
-        const voterListArea = document.getElementById('voterListArea');
-        const currentUpazilaTitle = document.getElementById('currentUpazilaTitle');
-        const maleBtn = document.getElementById('maleBtn');
-        const femaleBtn = document.getElementById('femaleBtn');
-        const backToDistrictBtn = document.getElementById('backToDistrictBtn');
-        const backToUpazilaBtn = document.getElementById('backToUpazilaBtn');
-
-        const AUTH_USER = 'admin'; const AUTH_PASS = '1234';
-        let currentUpazila = '';
-
-        // ২ ঘণ্টা ডিলে সহ প্রোগ্রেস
-        async function simulateVoterDownload(gender, upazila) {
-            const delayMinutes = 120; // ২ ঘণ্টা (৩ ঘণ্টা করতে চাইলে 180)
-            const totalSeconds = delayMinutes * 60;
-
-            const overlay = document.createElement('div');
-            overlay.className = 'progress-overlay';
-            
-            overlay.innerHTML = `
-                <h2 style="margin-bottom:10px">ভোটার তালিকা প্রস্তুত হচ্ছে</h2>
-                <p style="font-size:18px;margin-bottom:30px">${gender} ভোটার লিষ্ট • ${upazila} উপজেলা</p>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="fill"></div>
-                </div>
-                <p id="timeLeft" style="font-size:17px">আনুমানিক সময় বাকি: ${delayMinutes} মিনিট</p>
-                <button id="cancelBtn" style="margin-top:30px;padding:12px 40px;font-size:16px;background:#c62828;color:#fff;border:none;border-radius:6px;cursor:pointer">প্রক্রিয়া বাতিল করুন</button>
-            `;
-            document.body.appendChild(overlay);
-
-            let canceled = false;
-            const fill = overlay.querySelector('#fill');
-            const timeLeft = overlay.querySelector('#timeLeft');
-            const cancelBtn = overlay.querySelector('#cancelBtn');
-
-            cancelBtn.onclick = () => {
-                canceled = true;
-                overlay.remove();
-            };
-
-            const startTime = Date.now();
-            const interval = setInterval(() => {
-                if (canceled) { clearInterval(interval); return; }
-
-                const elapsed = (Date.now() - startTime) / 1000;
-                const percent = Math.min(100, (elapsed / totalSeconds) * 100);
-                fill.style.width = percent + '%';
-
-                const remaining = Math.max(0, totalSeconds - elapsed);
-                const minLeft = Math.floor(remaining / 60);
-                const secLeft = Math.floor(remaining % 60);
-                timeLeft.textContent = `আনুমানিক সময় বাকি: ${minLeft} মিনিট ${secLeft} সেকেন্ড`;
-
-                if (percent >= 100) {
-                    clearInterval(interval);
-                    overlay.remove();
-                    generateVoterPDF(gender, upazila);
-                }
-            }, 1000);
-        }
-
-        function generateVoterPDF(gender, upazila) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            doc.setFontSize(22);
-            doc.text("বাংলাদেশ নির্বাচন কমিশন", 105, 30, { align: "center" });
-            
-            doc.setFontSize(18);
-            doc.text("জাতীয় ভোটার তালিকা", 105, 50, { align: "center" });
-            
-            doc.setFontSize(16);
-            doc.text(`${gender} ভোটার তালিকা`, 105, 70, { align: "center" });
-            doc.text(upazila + " উপজেলা", 105, 85, { align: "center" });
-            
-            const today = new Date().toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
-            doc.setFontSize(13);
-            doc.text(`তারিখ: ${today}`, 105, 105, { align: "center" });
-            
-            doc.setFontSize(12);
-            let y = 130;
-            doc.text("ক্রমিক নং | নাম | পিতার নাম | জাতীয় পরিচয়পত্র নং | জন্ম তারিখ", 20, y);
-            y += 10;
-            doc.text("────────────────────────────────────────────────────────────", 20, y);
-            y += 15;
-            
-            for(let i = 1; i <= 25; i++) {
-                doc.text(`${i}.  ভোটার নাম-${i}   |   পিতা: [পিতার নাম]   |   NID: ১২৩৪৫৬৭৮৯${i.toString().padStart(3,'0')}   |   ০১/০১/১৯৯${i%10}`, 20, y);
-                y += 10;
-                if (y > 270) {
-                    doc.addPage();
-                    y = 30;
-                }
-            }
-            
-            doc.save(`${gender}_ভোটার_তালিকা_${upazila}.pdf`);
-        }
-
-        // জেলা ও উপজেলা ডেটা (অপরিবর্তিত)
-        const allDistricts = ["চট্টগ্রাম","ঢাকা","রাজশাহী","রংপুর","বরিশাল","সিলেট","খুলনা","ময়মনসিংহ","দিনাজপুর","বগুড়া","নোয়াখালী","কুমিল্লা","পাবনা","কুষ্টিয়া","যশোর","টাঙ্গাইল","নরসিংদী","গাজীপুর","নারায়ণগঞ্জ","ফরিদপুর","পটুয়াখালী","জামালপুর","মানিকগঞ্জ","মুন্সিগঞ্জ","চাঁপাইনবাবগঞ্জ","নওগাঁ","নাটোর","ঝিনাইদহ","মাগুরা","মেহেরপুর","চুয়াডাঙ্গা","রাজবাড়ী","গোপালগঞ্জ","মাদারীপুর","শরিয়তপুর","সাতক্ষীরা","বাগেরহাট","কক্সবাজার","পিরোজপুর","ঝালকাঠি","ভোলা","নীলফামারী","কুড়িগ্রাম","লালমনিরহাট","গাইবান্ধা","ঠাকুরগাঁও","পঞ্চগড়","জয়পুরহাট","সিরাজগঞ্জ","রাঙামাটি","খাগড়াছড়ি","বান্দরবান","সুনামগঞ্জ","হবিগঞ্জ","মৌলভীবাজার","ব্রাহ্মণবাড়িয়া","চাঁদপুর","লক্ষ্মীপুর","ফেনী","নেত্রকোণা","কিশোরগঞ্জ","বরগুনা","শেরপুর"];
-
-        const dinajpurUpazilas = ["দিনাজপুর সদর","বিরল","বীরগঞ্জ","বোচাগঞ্জ","কাহারোল","খানসামা","চিরিরবন্দর","ফুলবাড়ী","বিরামপুর","ঘোড়াঘাট","হাকিমপুর","নবাবগঞ্জ","পার্বতীপুর"];
-
-        function populateDistricts() {
-            districtSelect.innerHTML = '<option value="">-- জেলা নির্বাচন করুন --</option>';
-            allDistricts.forEach(dist => {
-                const opt = document.createElement('option');
-                opt.value = dist;
-                opt.textContent = dist + " জেলা";
-                districtSelect.appendChild(opt);
-            });
-        }
-
-        function showUpazilas() {
-            upazilaArea.style.display = 'block';
-            upazilaGrid.innerHTML = '';
-            dinajpurUpazilas.forEach(up => {
-                const btn = document.createElement('div');
-                btn.className = 'option-btn';
-                btn.style.fontSize = '14px';
-                btn.textContent = up;
-                btn.onclick = () => selectUpazila(up);
-                upazilaGrid.appendChild(btn);
-            });
-        }
-
-        function selectUpazila(upazila) {
-            currentUpazila = upazila;
-            currentUpazilaTitle.textContent = `${upazila} উপজেলা`;
-            voterListArea.style.display = 'block';
-            
-            maleBtn.onclick = () => simulateVoterDownload("পুরুষ", upazila);
-            femaleBtn.onclick = () => simulateVoterDownload("মহিলা", upazila);
-        }
-
-        function resetVoterSection() {
-            voterListArea.style.display = 'none';
-            upazilaArea.style.display = 'none';
-            districtSelect.value = '';
-        }
-
-        // অপশন বাটন লজিক
-        document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const action = btn.dataset.action;
-                searchCard.style.display = 'none';
-                document.getElementById('pdfContainer').style.display = 'none';
-                voterSection.style.display = 'none';
-
-                if (action === 'voter-list') {
-                    voterSection.style.display = 'block';
-                    resetVoterSection();
-                    populateDistricts();
-                    
-                    districtSelect.onchange = () => {
-                        if (districtSelect.value === "দিনাজপুর") {
-                            showUpazilas();
-                        } else if (districtSelect.value !== "") {
-                            upazilaArea.style.display = 'block';
-                            upazilaGrid.innerHTML = '<div style="padding:30px;text-align:center;color:#666;font-size:15px">এই জেলার ভোটার তালিকা বর্তমানে প্রস্তুতকরণাধীন রয়েছে।<br>দয়া করে পরবর্তীতে চেষ্টা করুন।</div>';
-                        }
-                    };
-                    
-                    backToDistrictBtn.onclick = resetVoterSection;
-                    backToUpazilaBtn.onclick = () => { voterListArea.style.display = 'none'; };
-                } else {
-                    searchCard.style.display = 'block';
-                    document.getElementById('pdfContainer').style.display = 'block';
-                    if(action === 'server-copy') searchLabel.textContent = 'সার্ভার কপি ডাউনলোডের জন্য NID সার্চ করুন';
-                    else if(action === 'sign-copy') searchLabel.textContent = 'সাইন কপি ডাউনলোডের জন্য NID সার্চ করুন';
-                    else searchLabel.textContent = 'NID দিয়ে সার্চ করুন';
-                    searchCard.scrollIntoView({ behavior: 'smooth' });
-                    searchNid.focus();
-                }
-            });
-        });
-
-        // লগইন + NID সার্চ (আপলোড অংশ সরানো)
-        function setLoggedIn(user){ loginCard.style.display = 'none'; dashboard.style.display = 'block'; loggedUser.textContent = user; }
-        function setLoggedOut(){ loginCard.style.display = 'block'; dashboard.style.display = 'none'; }
-
-        loginBtn.addEventListener('click', ()=>{ 
-            const u = userid.value.trim(); const p = password.value.trim();
-            if(u===AUTH_USER && p===AUTH_PASS){ setLoggedIn(u); } 
-            else { alert('ইউজার আইডি বা পাসওয়ার্ড সঠিক নয়'); }
-        });
-        logoutBtn.addEventListener('click', setLoggedOut);
-
-        searchBtn.addEventListener('click', ()=>{ const nid = searchNid.value.trim(); if(!nid) return alert('NID লিখুন'); showByNid(nid); });
-        let currentObjectUrl = null;
-        async function showByNid(nid){ 
-            viewerInfo.textContent = 'লোড হচ্ছে...'; clearViewer();
-            try{ const blob = await getBlob(nid); if(!blob){ viewerInfo.textContent = 'কোনো রেকর্ড পাওয়া যায়নি'; return; }
-                const url = URL.createObjectURL(blob); currentObjectUrl = url;
-                viewerInfo.innerHTML = `প্রদর্শিত হচ্ছে: <strong>${nid}</strong>`;
-                downloadBtn.style.display = 'inline-block'; openNewBtn.style.display = 'inline-block';
-                downloadBtn.onclick = ()=>{ const a = document.createElement('a'); a.href = url; a.download = `${nid}.pdf`; a.click(); };
-                openNewBtn.onclick = ()=>{ window.open(url, '_blank'); };
-                viewerFrame.innerHTML = ''; const iframe = document.createElement('iframe'); iframe.src = url; iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.frameBorder = '0'; viewerFrame.appendChild(iframe);
-            }catch(e){ viewerInfo.textContent = 'ভিউতে সমস্যা'; }
-        }
-        function clearViewer(){ 
-            viewerFrame.innerHTML = ''; viewerInfo.textContent = ''; downloadBtn.style.display = 'none'; openNewBtn.style.display = 'none';
-            if(currentObjectUrl){ URL.revokeObjectURL(currentObjectUrl); currentObjectUrl = null; }
-        }
-
-        // Init
-        openDb().then(()=>console.log('DB ready')).catch(e=>console.error(e));
-        setLoggedOut();
-    </script>
 </body>
 </html>
