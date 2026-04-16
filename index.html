@@ -30,7 +30,7 @@
         .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #0b5ed7; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loading-text { margin-top: 15px; color: white; font-size: 18px; }
-
+        
         /* NID Correction Styles */
         .msg-error { color: #c0392b; font-weight: 700; font-size: 16px; text-align: center; margin: 15px 0; padding: 12px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 6px; }
         .status-chip { padding: 6px 12px; border-radius: 20px; font-size: 13px; background: #fff8e6; color: #8a6b00; }
@@ -39,249 +39,240 @@
 </head>
 <body>
 
-    <!-- লগইন কন্টেইনার -->
-    <div id="loginContainer">
-        <div>
-            <form id="loginForm">
-                <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
-                <h3>CMS - NID DATABASE পার্টনার পোর্টাল</h3>
-                <input type="text" id="userid" class="form-control" placeholder="ইউজার আইডি" required>
-                <input type="password" id="password" class="form-control" placeholder="পাসওয়ার্ড" required>
-                <button type="submit" class="btn">লগইন</button>
-                <p style="margin-top:15px;">অ্যাকাউন্ট নেই? <a href="#" id="showRegister">রেজিস্টার করুন</a></p>
-                <div id="message"></div>
-            </form>
+<!-- লগইন কন্টেইনার (আপনার আসল কোডের মতোই) -->
+<div id="loginContainer">
+    <div>
+        <form id="loginForm">
+            <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
+            <h3>CMS - NID DATABASE পার্টনার পোর্টাল</h3>
+            <input type="text" id="userid" class="form-control" placeholder="ইউজার আইডি" required>
+            <input type="password" id="password" class="form-control" placeholder="পাসওয়ার্ড" required>
+            <button type="submit" class="btn">লগইন</button>
+            <p style="margin-top:15px;">অ্যাকাউন্ট নেই? <a href="#" id="showRegister">রেজিস্টার করুন</a></p>
+            <div id="message"></div>
+        </form>
 
-            <!-- মোবাইল নাম্বার -->
-            <div id="mobileSection" style="display:none;">
-                <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
-                <h3>মোবাইল নাম্বার যাচাই</h3>
-                <input type="text" id="mobileInput" class="form-control" placeholder="মোবাইল নাম্বার দিন (01XXXXXXXXX)" maxlength="11">
-                <button id="sendOtpBtn" class="btn">OTP পাঠান</button>
-                <div id="mobileMessage"></div>
+        <div id="mobileSection" style="display:none;">
+            <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
+            <h3>মোবাইল নাম্বার যাচাই</h3>
+            <input type="text" id="mobileInput" class="form-control" placeholder="মোবাইল নাম্বার দিন (01XXXXXXXXX)" maxlength="11">
+            <button id="sendOtpBtn" class="btn">OTP পাঠান</button>
+            <div id="mobileMessage"></div>
+        </div>
+
+        <div id="otpSection" style="display:none;">
+            <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
+            <h3>OTP যাচাই</h3>
+            <p id="otpMobileShow" style="margin:10px 0;font-size:15px;color:#0b5ed7;"></p>
+            <input type="text" id="otpInput" class="form-control" placeholder="৬ সংখ্যার OTP" maxlength="6">
+            <button id="verifyOtpBtn" class="btn">যাচাই করুন</button>
+            <div id="otpMessage"></div>
+        </div>
+
+        <form id="registerForm" style="display:none;">
+            <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
+            <h3>রেজিস্ট্রেশন</h3>
+            <input type="text" id="regUserid" class="form-control" placeholder="ইউজার আইডি" required>
+            <input type="password" id="regPassword" class="form-control" placeholder="পাসওয়ার্ড" required>
+            <button type="submit" class="btn">রেজিস্টার</button>
+            <p style="margin-top:15px;"><a href="#" id="showLogin">লগইন পেজে ফিরুন</a></p>
+            <div id="regMessage"></div>
+        </form>
+    </div>
+</div>
+
+<!-- লোডিং -->
+<div id="loadingOverlay">
+    <div style="text-align:center;">
+        <div class="spinner"></div>
+        <div class="loading-text">প্রক্রিয়া চলছে...</div>
+    </div>
+</div>
+
+<!-- ড্যাশবোর্ড -->
+<div id="dashboard" style="display:none;">
+    <div class="header">
+        <div style="display:flex;align-items:center;">
+            <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
+            <span>CMS - NID DATABASE পার্টনার পোর্টাল</span>
+        </div>
+        <button class="btn" onclick="logout()">লগআউট</button>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li><a onclick="showForm('nid')">এনআইডি সার্চ</a></li>
+                <li><a onclick="showForm('mobile')">মোবাইল সার্চ</a></li>
+                <li><a onclick="showForm('birth')">জন্ম নিবন্ধন সার্চ</a></li>
+                <li><a onclick="showForm('formno')">ফর্ম নাম্বার</a></li>
+                <li><a onclick="showForm('correction')">সংশোধন অনুমোদন</a></li>
+            </ul>
+        </div>
+        <div class="content">
+            <div class="box" id="formArea">
+                <h3>একটি অপশন নির্বাচন করুন</h3>
             </div>
-
-            <!-- OTP -->
-            <div id="otpSection" style="display:none;">
-                <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
-                <h3>OTP যাচাই</h3>
-                <p id="otpMobileShow" style="margin:10px 0;font-size:15px;color:#0b5ed7;"></p>
-                <input type="text" id="otpInput" class="form-control" placeholder="৬ সংখ্যার OTP" maxlength="6">
-                <button id="verifyOtpBtn" class="btn">যাচাই করুন</button>
-                <div id="otpMessage"></div>
-            </div>
-
-            <form id="registerForm" style="display:none;">
-                <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
-                <h3>রেজিস্ট্রেশন</h3>
-                <input type="text" id="regUserid" class="form-control" placeholder="ইউজার আইডি" required>
-                <input type="password" id="regPassword" class="form-control" placeholder="পাসওয়ার্ড" required>
-                <button type="submit" class="btn">রেজিস্টার</button>
-                <p style="margin-top:15px;"><a href="#" id="showLogin">লগইন পেজে ফিরুন</a></p>
-                <div id="regMessage"></div>
-            </form>
+            <div id="accessMessage"></div>
         </div>
     </div>
+</div>
 
-    <!-- লোডিং -->
-    <div id="loadingOverlay">
-        <div style="text-align:center;">
-            <div class="spinner"></div>
-            <div class="loading-text">প্রক্রিয়া চলছে...</div>
-        </div>
-    </div>
+<script>
+    // ================== লগইন + মোবাইল + OTP (আপনার আসল কোডের মতোই) ==================
+    document.getElementById("showRegister").addEventListener("click", e => { e.preventDefault(); document.getElementById("loginForm").style.display = "none"; document.getElementById("registerForm").style.display = "block"; });
+    document.getElementById("showLogin").addEventListener("click", e => { e.preventDefault(); document.getElementById("registerForm").style.display = "none"; document.getElementById("loginForm").style.display = "block"; });
 
-    <!-- ড্যাশবোর্ড -->
-    <div id="dashboard" style="display:none;">
-        <div class="header">
-            <div style="display:flex;align-items:center;">
-                <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Election_Commission_Logo.svg" alt="লোগো">
-                <span>CMS - NID DATABASE পার্টনার পোর্টাল</span>
-            </div>
-            <button class="btn" onclick="logout()">লগআউট</button>
-        </div>
-        <div class="container">
-            <div class="sidebar">
-                <ul>
-                    <li><a onclick="showForm('nid')">এনআইডি সার্চ</a></li>
-                    <li><a onclick="showForm('mobile')">মোবাইল সার্চ</a></li>
-                    <li><a onclick="showForm('birth')">জন্ম নিবন্ধন সার্চ</a></li>
-                    <li><a onclick="showForm('formno')">ফর্ম নাম্বার</a></li>
-                    <li><a onclick="showForm('correction')">সংশোধন অনুমোদন</a></li>
-                </ul>
-            </div>
-            <div class="content">
-                <div class="box" id="formArea">
-                    <h3>একটি অপশন নির্বাচন করুন</h3>
+    document.getElementById("loginForm").addEventListener("submit", e => {  
+        e.preventDefault();  
+        const user = document.getElementById("userid").value.trim();  
+        const pass = document.getElementById("password").value.trim();  
+        const stored = JSON.parse(localStorage.getItem("ecUser") || "{}");  
+        if (!stored || stored.userid !== user || stored.password !== pass) {  
+            document.getElementById("message").innerHTML = `<span class="error">ইউজার আইডি অথবা পাসওয়ার্ড ভুল।</span>`;  
+            return;  
+        }  
+        document.getElementById("loginForm").style.display = "none";  
+        document.getElementById("mobileSection").style.display = "block";  
+    });
+
+    document.getElementById("sendOtpBtn").addEventListener("click", () => {  
+        const mobile = document.getElementById("mobileInput").value.trim();  
+        const msg = document.getElementById("mobileMessage");  
+        if (mobile.length !== 11 || !mobile.startsWith("01")) {  
+            msg.innerHTML = `<span class="error">সঠিক মোবাইল নাম্বার দিন</span>`;  
+            return;  
+        }  
+        showLoading();  
+        setTimeout(() => {  
+            hideLoading();  
+            document.getElementById("mobileSection").style.display = "none";  
+            document.getElementById("otpSection").style.display = "block";  
+            document.getElementById("otpMobileShow").innerHTML = `মোবাইল: <b>${mobile}</b> এ OTP পাঠানো হয়েছে`;  
+        }, 1200);  
+    });
+
+    document.getElementById("verifyOtpBtn").addEventListener("click", () => {  
+        const otp = document.getElementById("otpInput").value.trim();  
+        const msg = document.getElementById("otpMessage");  
+        if (otp.length !== 6) {  
+            msg.innerHTML = `<span class="error">৬ সংখ্যার OTP দিন</span>`;  
+            return;  
+        }  
+        showLoading();  
+        setTimeout(() => {  
+            hideLoading();  
+            document.getElementById("otpSection").style.display = "none";  
+            document.getElementById("dashboard").style.display = "block";  
+        }, 1200);  
+    });
+
+    function showLoading() { document.getElementById("loadingOverlay").style.display = "flex"; }  
+    function hideLoading() { document.getElementById("loadingOverlay").style.display = "none"; }  
+    function logout() { location.reload(); }  
+
+    function showForm(type) {  
+        document.getElementById("accessMessage").innerHTML = "";  
+        if (type === "correction") {  
+            showNIDCorrectionSystem();  
+            return;  
+        }  
+        let title = type === "nid" ? "এনআইডি সার্চ" : type === "mobile" ? "মোবাইল সার্চ" : type === "birth" ? "জন্ম নিবন্ধন সার্চ" : "ফর্ম নাম্বার";  
+        const html = `<button class="btn" onclick="backToDefault()">ফিরে যান</button><h3>${title}</h3><input type="text" id="searchInput" class="form-control" placeholder="অনুসন্ধানের তথ্য দিন"><button class="btn" onclick="performSearch('${type}')">সার্চ করুন</button><div id="resultArea"></div>`;  
+        document.getElementById("formArea").innerHTML = html;  
+    }  
+
+    function backToDefault() {  
+        document.getElementById("formArea").innerHTML = "<h3>একটি অপশন নির্বাচন করুন</h3>";  
+    }  
+
+    function performSearch(type) {  
+        showLoading();  
+        setTimeout(() => {  
+            hideLoading();  
+            document.getElementById("accessMessage").innerHTML = `<div style="color:red;font-weight:bold;padding:20px;border:2px solid #f5c6cb;background:#f8d7da;border-radius:8px;">দুঃখিত আপনার পোর্টালে নির্বাচন কমিশনের এক্সেস যুক্ত নেই।</div>`;  
+        }, 800);  
+    }  
+
+    // ================== NID Correction System (শুধু এই অংশ পরিবর্তন করা হয়েছে) ==================
+    function showNIDCorrectionSystem() {  
+        const html = `  
+            <button class="btn" onclick="backToDefault()" style="margin-bottom:15px;">← ফিরে যান</button>  
+            <h3>NID Correction Portal</h3>  
+            <div class="search-row" style="margin-top:15px;">  
+                <input id="nidInput" type="text" placeholder="NID দিন (যেমন: 3318210865)" style="flex:1;padding:12px;border:1px solid #ccc;border-radius:8px">  
+                <button class="btn" id="searchBtn">Search</button>  
+            </div>  
+            <div id="searchMsg" style="display:none;color:#c0392b;margin:10px 0;"></div>  
+            <div id="resultsWrap" style="display:none">  
+                <table>  
+                    <thead><tr><th>বিষয়</th><th>বর্তমান তথ্য</th><th>চাহিত তথ্য</th></tr></thead>  
+                    <tbody id="resultsBody"></tbody>  
+                </table>  
+                <div style="margin-top:20px;text-align:center;">
+                    <button id="approveBtn" class="btn" style="background:#28a745;">অনুমোদন করুন</button>
                 </div>
-                <div id="accessMessage"></div>
-            </div>
-        </div>
-    </div>
+            </div>  
+        `;  
+        document.getElementById("formArea").innerHTML = html;  
 
-    <script>
-        // ================== লগইন + মোবাইল + OTP ==================
-        document.getElementById("showRegister").addEventListener("click", e => { e.preventDefault(); document.getElementById("loginForm").style.display = "none"; document.getElementById("registerForm").style.display = "block"; });
-        document.getElementById("showLogin").addEventListener("click", e => { e.preventDefault(); document.getElementById("registerForm").style.display = "none"; document.getElementById("loginForm").style.display = "block"; });
+        function el(id) { return document.getElementById(id); }
 
-        document.getElementById("loginForm").addEventListener("submit", e => {
-            e.preventDefault();
-            const user = document.getElementById("userid").value.trim();
-            const pass = document.getElementById("password").value.trim();
-            const stored = JSON.parse(localStorage.getItem("ecUser") || "{}");
-            if (!stored || stored.userid !== user || stored.password !== pass) {
-                document.getElementById("message").innerHTML = `<span class="error">ইউজার আইডি অথবা পাসওয়ার্ড ভুল।</span>`;
+        const searchBtn = document.getElementById('searchBtn');
+        searchBtn.addEventListener('click', () => {
+            const nid = document.getElementById('nidInput').value.trim();
+            const msg = document.getElementById('searchMsg');
+
+            if (nid !== "3318210865") {
+                msg.textContent = 'কোনো তথ্য পাওয়া যায়নি';
+                msg.style.display = 'block';
                 return;
             }
-            document.getElementById("loginForm").style.display = "none";
-            document.getElementById("mobileSection").style.display = "block";
-        });
 
-        document.getElementById("sendOtpBtn").addEventListener("click", () => {
-            const mobile = document.getElementById("mobileInput").value.trim();
-            const msg = document.getElementById("mobileMessage");
-            if (mobile.length !== 11 || !mobile.startsWith("01")) {
-                msg.innerHTML = `<span class="error">সঠিক মোবাইল নাম্বার দিন</span>`;
-                return;
-            }
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                document.getElementById("mobileSection").style.display = "none";
-                document.getElementById("otpSection").style.display = "block";
-                document.getElementById("otpMobileShow").innerHTML = `মোবাইল: <b>${mobile}</b> এ OTP পাঠানো হয়েছে`;
-            }, 1200);
-        });
+            msg.style.display = 'none';
 
-        document.getElementById("verifyOtpBtn").addEventListener("click", () => {
-            const otp = document.getElementById("otpInput").value.trim();
-            const msg = document.getElementById("otpMessage");
-            if (otp.length !== 6) {
-                msg.innerHTML = `<span class="error">৬ সংখ্যার OTP দিন</span>`;
-                return;
-            }
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                document.getElementById("otpSection").style.display = "none";
-                document.getElementById("dashboard").style.display = "block";
-            }, 1200);
-        });
-
-        function showLoading() { document.getElementById("loadingOverlay").style.display = "flex"; }
-        function hideLoading() { document.getElementById("loadingOverlay").style.display = "none"; }
-        function logout() { location.reload(); }
-
-        function showForm(type) {
-            document.getElementById("accessMessage").innerHTML = "";
-            if (type === "correction") {
-                showNIDCorrectionSystem();
-                return;
-            }
-            let title = type === "nid" ? "এনআইডি সার্চ" : type === "mobile" ? "মোবাইল সার্চ" : type === "birth" ? "জন্ম নিবন্ধন সার্চ" : "ফর্ম নাম্বার";
-            const html = `<button class="btn" onclick="backToDefault()">ফিরে যান</button><h3>${title}</h3><input type="text" id="searchInput" class="form-control" placeholder="অনুসন্ধানের তথ্য দিন"><button class="btn" onclick="performSearch('${type}')">সার্চ করুন</button><div id="resultArea"></div>`;
-            document.getElementById("formArea").innerHTML = html;
-        }
-
-        function backToDefault() {
-            document.getElementById("formArea").innerHTML = "<h3>একটি অপশন নির্বাচন করুন</h3>";
-        }
-
-        function performSearch(type) {
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                document.getElementById("accessMessage").innerHTML = `<div style="color:red;font-weight:bold;padding:20px;border:2px solid #f5c6cb;background:#f8d7da;border-radius:8px;">দুঃখিত আপনার পোর্টালে নির্বাচন কমিশনের এক্সেস যুক্ত নেই।</div>`;
-            }, 800);
-        }
-
-        // ================== NID Correction System (হুবহু আপনার দেওয়া) ==================
-        function showNIDCorrectionSystem() {
-            const html = `
-                <button class="btn" onclick="backToDefault()" style="margin-bottom:15px;">← ফিরে যান</button>
-                <h3>NID Correction Portal</h3>
-                <div class="search-row" style="margin-top:15px;">
-                    <input id="nidInput" type="text" placeholder="NID দিন (যেমন: 1035217981)" style="flex:1;padding:12px;border:1px solid #ccc;border-radius:8px">
-                    <button class="btn" id="searchBtn">Search</button>
-                </div>
-                <div id="searchMsg" style="display:none;color:#c0392b;margin:10px 0;"></div>
-                <div id="resultsWrap" style="display:none">
-                    <table>
-                        <thead><tr><th>ID</th><th>Applicant Name</th><th>NID</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody id="resultsBody"></tbody>
-                    </table>
-                </div>
+            // শুধুমাত্র নামের সংশোধন দেখাবে (Ga ক্যাটাগরি)
+            const tableHTML = `
+                <tr>
+                    <td>নাম (বাংলা)</td>
+                    <td>মোঃ জিহাদ</td>
+                    <td>আব্দুল্লাহ আল জিহাদ</td>
+                </tr>
+                <tr>
+                    <td>নাম (ইংরেজি)</td>
+                    <td>MD. JIHAD</td>
+                    <td>Abdullah Al Jihad</td>
+                </tr>
             `;
-            document.getElementById("formArea").innerHTML = html;
 
-            function el(id) { return document.getElementById(id); }
-            function uuid() { return 'APP' + Math.random().toString(36).slice(2,10).toUpperCase(); }
+            document.getElementById('resultsBody').innerHTML = tableHTML;
+            document.getElementById('resultsWrap').style.display = 'block';
 
-            const BASE_CURRENT = { name: 'নুসরাত জাহান', 'মাতার নাম': 'নুরুন্নাহার', 'বৈবাহিক অবস্থা': 'অবিবাহিত', 'স্বামী বা স্ত্রীর নাম': '', 'স্বামী বা স্ত্রীর NID নম্বর': '' };
+            // Application ID দেখানো
+            const appDiv = document.createElement('div');
+            appDiv.style.marginTop = "15px";
+            appDiv.style.padding = "10px";
+            appDiv.style.background = "#f8f9fa";
+            appDiv.style.borderRadius = "6px";
+            appDiv.innerHTML = `<strong>আবেদন আইডি:</strong> NIDCA5001065649<br><strong>ক্যাটাগরি:</strong> Ga`;
+            document.getElementById('resultsWrap').appendChild(appDiv);
+        });
 
-            function saveState(n, o) { localStorage.setItem('ec_nid_' + n, JSON.stringify(o)); }
-            function loadState(n) { const v = localStorage.getItem('ec_nid_' + n); return v ? JSON.parse(v) : null; }
-
-            async function doSearch() {
-                const nid = el('nidInput').value.trim();
-                const msg = el('searchMsg');
-                msg.style.display = 'none';
-                if (!nid) {
-                    msg.textContent = 'NID দিন';
-                    msg.style.display = 'block';
-                    return;
-                }
-
-                showLoading();
-                el('searchBtn').disabled = true;
-
-                let hasData = false;
-                try {
-                    const res = await fetch(`https://nayeembro.xyz/SV/info.php?nid=${nid}`);
-                    const text = await res.text();
-                    if (!text.includes("No content") && text.trim() !== "") hasData = true;
-                } catch(e) {}
-
-                hideLoading();
-                el('searchBtn').disabled = false;
-
-                if (!hasData) {
-                    msg.innerHTML = 'কোনো তথ্য পাওয়া যায়নি';
-                    msg.style.display = 'block';
-                    return;
-                }
-
-                let st = loadState(nid);
-                if (!st) {
-                    const current = {...BASE_CURRENT, nid: nid};
-                    const newValues = { 'মাতার নাম': 'নুরুন্নাহার বেগম', 'বৈবাহিক অবস্থা': 'বিবাহিত', 'স্বামী বা স্ত্রীর নাম': 'শাকিবুল হাসান', 'স্বামী বা স্ত্রীর NID নম্বর': '8711565146' };
-                    st = { current, requests: [{ id: uuid(), category: 'Kha', status: 'Pending', oldValues: current, newValues, notes: 'সংশোধনের অনুরোধ' }] };
-                    saveState(nid, st);
-                }
-
-                renderResults(nid, st);
-                el('resultsWrap').style.display = 'block';
+        // অনুমোদন বাটন - লাল মেসেজ
+        document.getElementById('formArea').addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'approveBtn') {
+                e.target.style.display = 'none';
+                
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'msg-error';
+                errorMsg.style.fontSize = '17px';
+                errorMsg.style.marginTop = '20px';
+                errorMsg.textContent = 'দুঃখিত, এটি আপনি তদন্ত ছাড়া অনুমোদন করতে পারবেন না।';
+                
+                document.getElementById('resultsWrap').appendChild(errorMsg);
             }
+        });
+    }
+</script>
 
-            function renderResults(nid, state) {
-                const tbody = el('resultsBody');
-                tbody.innerHTML = '';
-                state.requests.forEach((r, idx) => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${r.id}</td><td>${state.current.name}</td><td>${nid}</td><td><span class="status-chip status-pending">${r.status}</span></td><td><span class="eye" onclick="openDetail(${idx}, '${nid}')">👁</span></td>`;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            function openDetail(idx, nid) {
-                alert("ডিটেইল দেখানো হচ্ছে");
-            }
-
-            setTimeout(() => {
-                const btn = document.getElementById('searchBtn');
-                if (btn) btn.addEventListener('click', doSearch);
-            }, 100);
-        }
-    </script>
 </body>
 </html>
