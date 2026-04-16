@@ -20,26 +20,42 @@
         .form-control { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
         .btn { padding: 10px 20px; background: #0b5ed7; border: none; color: white; cursor: pointer; border-radius: 5px; font-size: 16px; }
         .btn:hover { background: #0949a5; }
+        
         #loginContainer { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        #loginForm, #mobileSection, #otpSection, #registerForm { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.15); width: 100%; max-width: 400px; text-align: center; }
+        #loginForm, #mobileSection, #otpSection, #registerForm { 
+            background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.15); 
+            width: 100%; max-width: 400px; text-align: center; 
+        }
         #message, #regMessage, #mobileMessage, #otpMessage { margin-top: 15px; font-weight: bold; min-height: 22px; }
         .success { color: green; }
         .error { color: red; }
         #dashboard { display: none; }
-        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; }
-        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #0b5ed7; border-radius: 50%; animation: spin 1s linear infinite; }
+        
+        #loadingOverlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; 
+        }
+        .spinner { 
+            width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #0b5ed7; 
+            border-radius: 50%; animation: spin 1s linear infinite; 
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loading-text { margin-top: 15px; color: white; font-size: 18px; }
-        
+
         /* NID Correction Styles */
-        .msg-error { color: #c0392b; font-weight: 700; font-size: 16px; text-align: center; margin: 15px 0; padding: 12px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 6px; }
-        .status-chip { padding: 6px 12px; border-radius: 20px; font-size: 13px; background: #fff8e6; color: #8a6b00; }
-        .eye { cursor: pointer; font-size: 20px; color: #0b5ed7; }
+        .msg-error { 
+            color: #c0392b; font-weight: 700; font-size: 17px; text-align: center; 
+            margin: 15px 0; padding: 15px; background: #f8d7da; border: 2px solid #f5c6cb; 
+            border-radius: 8px; 
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border: 1px solid #ddd; }
+        th { background: #f8f9fa; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<!-- লগইন কন্টেইনার (আপনার আসল কোডের মতোই) -->
+<!-- লগইন কন্টেইনার -->
 <div id="loginContainer">
     <div>
         <form id="loginForm">
@@ -118,23 +134,74 @@
 </div>
 
 <script>
-    // ================== লগইন + মোবাইল + OTP (আপনার আসল কোডের মতোই) ==================
-    document.getElementById("showRegister").addEventListener("click", e => { e.preventDefault(); document.getElementById("loginForm").style.display = "none"; document.getElementById("registerForm").style.display = "block"; });
-    document.getElementById("showLogin").addEventListener("click", e => { e.preventDefault(); document.getElementById("registerForm").style.display = "none"; document.getElementById("loginForm").style.display = "block"; });
-
-    document.getElementById("loginForm").addEventListener("submit", e => {  
-        e.preventDefault();  
-        const user = document.getElementById("userid").value.trim();  
-        const pass = document.getElementById("password").value.trim();  
-        const stored = JSON.parse(localStorage.getItem("ecUser") || "{}");  
-        if (!stored || stored.userid !== user || stored.password !== pass) {  
-            document.getElementById("message").innerHTML = `<span class="error">ইউজার আইডি অথবা পাসওয়ার্ড ভুল।</span>`;  
-            return;  
-        }  
-        document.getElementById("loginForm").style.display = "none";  
-        document.getElementById("mobileSection").style.display = "block";  
+    // ================== লগইন + রেজিস্টার + লোডিং ==================
+    document.getElementById("showRegister").addEventListener("click", e => { 
+        e.preventDefault(); 
+        document.getElementById("loginForm").style.display = "none"; 
+        document.getElementById("registerForm").style.display = "block"; 
+    });
+    
+    document.getElementById("showLogin").addEventListener("click", e => { 
+        e.preventDefault(); 
+        document.getElementById("registerForm").style.display = "none"; 
+        document.getElementById("loginForm").style.display = "block"; 
     });
 
+    // রেজিস্টার
+    document.getElementById("registerForm").addEventListener("submit", e => {
+        e.preventDefault();
+        const user = document.getElementById("regUserid").value.trim();
+        const pass = document.getElementById("regPassword").value.trim();
+        const msg = document.getElementById("regMessage");
+
+        if (user.length < 3 || pass.length < 4) {
+            msg.innerHTML = `<span class="error">ইউজার আইডি ও পাসওয়ার্ড কমপক্ষে ৩/৪ অক্ষর হতে হবে</span>`;
+            return;
+        }
+
+        showLoading();
+        setTimeout(() => {
+            localStorage.setItem("ecUser", JSON.stringify({ userid: user, password: pass }));
+            hideLoading();
+            msg.innerHTML = `<span class="success">রেজিস্ট্রেশন সফল! এখন লগইন করুন।</span>`;
+            
+            setTimeout(() => {
+                document.getElementById("registerForm").style.display = "none";
+                document.getElementById("loginForm").style.display = "block";
+                document.getElementById("userid").value = user;
+                document.getElementById("regMessage").innerHTML = "";
+            }, 1500);
+        }, 1000);
+    });
+
+    // লগইন
+    document.getElementById("loginForm").addEventListener("submit", e => {
+        e.preventDefault();
+        const user = document.getElementById("userid").value.trim();
+        const pass = document.getElementById("password").value.trim();
+        const msg = document.getElementById("message");
+        const stored = JSON.parse(localStorage.getItem("ecUser") || "{}");
+
+        if (!user || !pass) {
+            msg.innerHTML = `<span class="error">ইউজার আইডি ও পাসওয়ার্ড দিন</span>`;
+            return;
+        }
+
+        showLoading();
+
+        setTimeout(() => {
+            hideLoading();
+            if (stored.userid === user && stored.password === pass) {
+                document.getElementById("loginForm").style.display = "none";
+                document.getElementById("mobileSection").style.display = "block";
+                msg.innerHTML = "";
+            } else {
+                msg.innerHTML = `<span class="error">ইউজার আইডি অথবা পাসওয়ার্ড ভুল।</span>`;
+            }
+        }, 800);
+    });
+
+    // OTP অংশ
     document.getElementById("sendOtpBtn").addEventListener("click", () => {  
         const mobile = document.getElementById("mobileInput").value.trim();  
         const msg = document.getElementById("mobileMessage");  
@@ -166,9 +233,17 @@
         }, 1200);  
     });
 
-    function showLoading() { document.getElementById("loadingOverlay").style.display = "flex"; }  
-    function hideLoading() { document.getElementById("loadingOverlay").style.display = "none"; }  
-    function logout() { location.reload(); }  
+    function showLoading() { 
+        document.getElementById("loadingOverlay").style.display = "flex"; 
+    }
+    
+    function hideLoading() { 
+        document.getElementById("loadingOverlay").style.display = "none"; 
+    }
+    
+    function logout() { 
+        location.reload(); 
+    }
 
     function showForm(type) {  
         document.getElementById("accessMessage").innerHTML = "";  
@@ -193,17 +268,17 @@
         }, 800);  
     }  
 
-    // ================== NID Correction System (শুধু এই অংশ পরিবর্তন করা হয়েছে) ==================
+    // ================== NID Correction System ==================
     function showNIDCorrectionSystem() {  
         const html = `  
             <button class="btn" onclick="backToDefault()" style="margin-bottom:15px;">← ফিরে যান</button>  
             <h3>NID Correction Portal</h3>  
-            <div class="search-row" style="margin-top:15px;">  
-                <input id="nidInput" type="text" placeholder="NID দিন (যেমন: 3318210865)" style="flex:1;padding:12px;border:1px solid #ccc;border-radius:8px">  
+            <div style="margin-top:15px; display:flex; gap:10px;">
+                <input id="nidInput" type="text" placeholder="NID দিন (যেমন: 3318210865)" style="flex:1;padding:12px;border:1px solid #ccc;border-radius:8px">
                 <button class="btn" id="searchBtn">Search</button>  
             </div>  
             <div id="searchMsg" style="display:none;color:#c0392b;margin:10px 0;"></div>  
-            <div id="resultsWrap" style="display:none">  
+            <div id="resultsWrap" style="display:none; margin-top:20px;">
                 <table>  
                     <thead><tr><th>বিষয়</th><th>বর্তমান তথ্য</th><th>চাহিত তথ্য</th></tr></thead>  
                     <tbody id="resultsBody"></tbody>  
@@ -215,10 +290,7 @@
         `;  
         document.getElementById("formArea").innerHTML = html;  
 
-        function el(id) { return document.getElementById(id); }
-
-        const searchBtn = document.getElementById('searchBtn');
-        searchBtn.addEventListener('click', () => {
+        document.getElementById('searchBtn').addEventListener('click', () => {
             const nid = document.getElementById('nidInput').value.trim();
             const msg = document.getElementById('searchMsg');
 
@@ -230,44 +302,31 @@
 
             msg.style.display = 'none';
 
-            // শুধুমাত্র নামের সংশোধন দেখাবে (Ga ক্যাটাগরি)
             const tableHTML = `
-                <tr>
-                    <td>নাম (বাংলা)</td>
-                    <td>মোঃ জিহাদ</td>
-                    <td>আব্দুল্লাহ আল জিহাদ</td>
-                </tr>
-                <tr>
-                    <td>নাম (ইংরেজি)</td>
-                    <td>MD. JIHAD</td>
-                    <td>Abdullah Al Jihad</td>
-                </tr>
+                <tr><td>নাম (বাংলা)</td><td>মোঃ জিহাদ</td><td>আব্দুল্লাহ আল জিহাদ</td></tr>
+                <tr><td>নাম (ইংরেজি)</td><td>MD. JIHAD</td><td>Abdullah Al Jihad</td></tr>
             `;
 
             document.getElementById('resultsBody').innerHTML = tableHTML;
             document.getElementById('resultsWrap').style.display = 'block';
 
-            // Application ID দেখানো
+            // আবেদন আইডি
             const appDiv = document.createElement('div');
             appDiv.style.marginTop = "15px";
-            appDiv.style.padding = "10px";
+            appDiv.style.padding = "12px";
             appDiv.style.background = "#f8f9fa";
             appDiv.style.borderRadius = "6px";
             appDiv.innerHTML = `<strong>আবেদন আইডি:</strong> NIDCA5001065649<br><strong>ক্যাটাগরি:</strong> Ga`;
             document.getElementById('resultsWrap').appendChild(appDiv);
         });
 
-        // অনুমোদন বাটন - লাল মেসেজ
+        // অনুমোদন বাটন
         document.getElementById('formArea').addEventListener('click', function(e) {
             if (e.target && e.target.id === 'approveBtn') {
                 e.target.style.display = 'none';
-                
                 const errorMsg = document.createElement('div');
                 errorMsg.className = 'msg-error';
-                errorMsg.style.fontSize = '17px';
-                errorMsg.style.marginTop = '20px';
                 errorMsg.textContent = 'দুঃখিত, এটি আপনি তদন্ত ছাড়া অনুমোদন করতে পারবেন না।';
-                
                 document.getElementById('resultsWrap').appendChild(errorMsg);
             }
         });
